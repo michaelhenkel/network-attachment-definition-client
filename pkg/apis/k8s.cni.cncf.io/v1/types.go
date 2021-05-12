@@ -18,11 +18,43 @@ type NetworkAttachmentDefinition struct {
 	Status NetworkAttachmentDefinitionStatus `json:"status,omitempty"`
 }
 
+// StateType contains a valid resource state
+type StateType string
+
+const (
+	// PendingState indicates object waiting to reconcile
+	PendingState StateType = "Pending"
+	// PendingObservationMessage is the default message for a resource pending
+	// to be reconciled
+	PendingObservationMessage = "Object waiting to be reconciled"
+	// SuccessState indicates object successfully reconcile
+	SuccessState StateType = "Success"
+	// FailureState indicates the object has failed to reconcile for one or more reasons
+	FailureState StateType = "Failure"
+)
+
 type NetworkAttachmentDefinitionSpec struct {
 	Config string `json:"config"`
 }
 
 type NetworkAttachmentDefinitionStatus struct {
+	// Common status fields
+	CommonStatus `json:",inline"`
+}
+
+// CommonStatus contains Contrail resource fields all types must implement in their status
+type CommonStatus struct {
+	ReconcilerState `json:",inline"`
+}
+
+// ReconcilerState permits to know if an object was reconciled
+type ReconcilerState struct {
+	// Current state of the reconciliation. The state is updated during the process. See: State's type.
+	State StateType `json:"state"`
+
+	// Provides relative information related to the signature and state, example if an error happened.
+	// +optional
+	Observation string `json:"observation"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

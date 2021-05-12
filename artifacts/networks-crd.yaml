@@ -35,6 +35,11 @@ spec:
             - config
             type: object
           status:
+            properties:
+              state:
+                type: string
+              observation:
+                type: string
             type: object
         required:
         - spec
